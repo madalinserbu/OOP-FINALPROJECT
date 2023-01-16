@@ -25,7 +25,7 @@ import static execution.Purchase.purchase;
 import static execution.Rate.rateAMovie;
 import static execution.Register.register;
 import static execution.Search.search;
-//import static execution.Subscribe.subscribe;
+import static execution.Subscribe.subscribe;
 import static execution.Watch.watch;
 
 /**toate actiunile de tip "on page"*/
@@ -104,7 +104,7 @@ public final class OnPageActions {
             case "watch" -> watch(node, output);
             case "like" -> like(node, output);
             case "rate" -> rateAMovie(action.rate(), node, output);
-            //case "subscribe" -> subscribe(action.subscribedGenre());
+            case "subscribe" -> subscribe(action.subscribedGenre());
             default -> System.out.println("ERROR!");
         }
     }
@@ -433,4 +433,14 @@ class Rate {
     }
 }
 
-
+class Subscribe {
+    static void subscribe(final String subscribedGenre) {
+        User realTimeUser = RealTimePage.getIt().getUser();
+        realTimeUser.getSubGenres().add(subscribedGenre);
+        for (User databaseUser : AllUsers.getDatabase().getAllUsers()) {
+            if (databaseUser.getCredentials().getName().equals(realTimeUser.getCredentials().getName())) {
+                databaseUser.getSubGenres().add(subscribedGenre);
+            }
+        }
+    }
+}
