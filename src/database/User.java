@@ -4,10 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.CredentialsIO;
 import execution.Notification;
 import io.UserIO;
-
 import java.util.ArrayList;
 
 public final class User extends UserIO {
+    private static final int FIFTEEN = 15;
     private int tokensCount;
     private int numFreePremiumMovies;
     private ArrayList<Movie> purchasedMovies;
@@ -16,12 +16,12 @@ public final class User extends UserIO {
     private ArrayList<Movie> ratedMovies;
     private ArrayList<Notification> notifications;
     @JsonIgnore
-    private ArrayList<String> subGenres;
+    private final ArrayList<String> subGenres;
 
     public User(final UserIO user) {
         super(user);
         this.tokensCount = 0;
-        this.numFreePremiumMovies = 15;
+        this.numFreePremiumMovies = FIFTEEN;
         purchasedMovies = new ArrayList<>();
         watchedMovies = new ArrayList<>();
         likedMovies = new ArrayList<>();
@@ -45,7 +45,7 @@ public final class User extends UserIO {
     public User(final CredentialsIO credentials) {
         super(credentials);
         this.tokensCount = 0;
-        this.numFreePremiumMovies = 15;
+        this.numFreePremiumMovies = FIFTEEN;
         purchasedMovies = new ArrayList<>();
         watchedMovies = new ArrayList<>();
         likedMovies = new ArrayList<>();
@@ -106,15 +106,11 @@ public final class User extends UserIO {
         return subGenres;
     }
 
-    public void setSubGenres(ArrayList<String> subGenres) {
-        this.subGenres = subGenres;
-    }
-
     public ArrayList<Notification> getNotifications() {
         return notifications;
     }
 
-    public void setNotifications(ArrayList<Notification> notifications) {
+    public void setNotifications(final ArrayList<Notification> notifications) {
         this.notifications = notifications;
     }
 }

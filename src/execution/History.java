@@ -8,9 +8,10 @@ import java.util.Stack;
 
 import static execution.OnPageActions.putActionOutput;
 
-public class History {
-    private Stack<String> pageHistory;
-    private Stack<Movie> movieHistory;
+/** istoricul paginilor/filmelor (in cazul painilor 'see details') */
+public final class History {
+    private final Stack<String> pageHistory;
+    private final Stack<Movie> movieHistory;
     private static History it = null;
 
     /**singleton*/
@@ -26,13 +27,15 @@ public class History {
         movieHistory = new Stack<>();
     }
 
+    /** elibereaza istoricul */
     public void clear() {
         pageHistory.clear();
         movieHistory.clear();
         it = null;
     }
 
-    public static void back(ObjectNode node, ArrayNode output) {
+    /** metoda este responsabila pentru a ne intoarce pe pagina precedenta */
+    public static void back(final ObjectNode node, final ArrayNode output) {
         if (it != null) {
             if (History.getIt().pageHistory.size() > 0) {
                 String previousPage = History.getIt().pageHistory.pop();
@@ -56,15 +59,7 @@ public class History {
         return pageHistory;
     }
 
-    public void setPageHistory(Stack<String> pageHistory) {
-        this.pageHistory = pageHistory;
-    }
-
     public Stack<Movie> getMovieHistory() {
         return movieHistory;
-    }
-
-    public void setMovieHistory(Stack<Movie> movieHistory) {
-        this.movieHistory = movieHistory;
     }
 }

@@ -20,6 +20,8 @@ import static execution.Like.like;
 import static execution.Like.updateAllMovieLists;
 import static execution.Login.loggedSuccessfully;
 import static execution.Login.login;
+import static execution.OnPageActions.SIX;
+import static execution.OnPageActions.TEN;
 import static execution.OnPageActions.putActionOutput;
 import static execution.Purchase.purchase;
 import static execution.Rate.rateAMovie;
@@ -30,6 +32,10 @@ import static execution.Watch.watch;
 
 /**toate actiunile de tip "on page"*/
 public final class OnPageActions {
+    public static final int SIX = 6;
+    public static final int TEN = 10;
+    private OnPageActions() {
+    }
 
     /**
      * verifica daca actiunea de tip "on page" e permisa
@@ -130,7 +136,10 @@ public final class OnPageActions {
     }
 }
 
-class Login {
+final class Login {
+    private Login() {
+    }
+    /**comanda 'on page' de login*/
     static void login(final CredentialsIO credentials, final ObjectNode node,
                       final ArrayNode output) {
         boolean userIsInDatabase = false;
@@ -149,6 +158,7 @@ class Login {
         }
     }
 
+    /** actiunea propriu-zisa de logare cu succes*/
     static void loggedSuccessfully(final User user) {
         RealTimePage.getIt().setPageName("homepage");
         User copyUser = new User(user);
@@ -165,7 +175,10 @@ class Login {
     }
 }
 
-class Register {
+final class Register {
+    private Register() {
+    }
+    /**comanda 'on page' de register*/
     static void register(final CredentialsIO credentials, final ObjectNode node,
                          final ArrayNode output) {
         boolean userIsNotInDatabase = true;
@@ -186,7 +199,10 @@ class Register {
     }
 }
 
-class Search {
+final class Search {
+    private Search() {
+    }
+    /**comanda 'on page' de search*/
     static void search(final String startWith, final ObjectNode node, final ArrayNode output) {
         RealTimePage.getIt().getMovieList().clear();
         for (Movie movie : RealTimePage.getIt().getCountryPermittedMovies()) {
@@ -198,7 +214,10 @@ class Search {
     }
 }
 
-class Filter {
+final class Filter {
+    private Filter() {
+    }
+    /**comanda 'on page' de filter*/
     static void filter(final FiltersIO filters, final ObjectNode node, final ArrayNode output) {
         if (filters.contains() != null) {
             RealTimePage.getIt().getMovieList().clear();
@@ -246,26 +265,32 @@ class Filter {
     }
 }
 
-class BuyTokens {
+final class BuyTokens {
+    private BuyTokens() {
+    }
+    /**comanda 'on page' de buy tokens*/
     static void buyTokens(final String count, final ObjectNode node, final ArrayNode output) {
         String userBalance = RealTimePage.getIt().getUser().getCredentials().getBalance();
         if (Integer.parseInt(count) <= Integer.parseInt(userBalance)) {
-            RealTimePage.getIt().getUser().getCredentials().setBalance
-                    (Integer.toString(Integer.parseInt(userBalance) - Integer.parseInt(count)));
-            RealTimePage.getIt().getUser().setTokensCount
-                    (RealTimePage.getIt().getUser().getTokensCount() + Integer.parseInt(count));
+            RealTimePage.getIt().getUser().getCredentials().setBalance(Integer
+                    .toString(Integer.parseInt(userBalance) - Integer.parseInt(count)));
+            RealTimePage.getIt().getUser().setTokensCount(
+                    RealTimePage.getIt().getUser().getTokensCount() + Integer.parseInt(count));
         } else {
             putActionOutput(false, node, output);
         }
     }
 }
 
-class BuyPremiumAccount {
+final class BuyPremiumAccount {
+    private BuyPremiumAccount() {
+    }
+    /**comanda 'on page' de buy premium account*/
     static void buyPremiumAccount(final ObjectNode node, final ArrayNode output) {
         if (RealTimePage.getIt().getUser().getCredentials().getAccountType().equals("standard")
-                && RealTimePage.getIt().getUser().getTokensCount() >= 10) {
-            RealTimePage.getIt().getUser().setTokensCount
-                    (RealTimePage.getIt().getUser().getTokensCount() - 10);
+                && RealTimePage.getIt().getUser().getTokensCount() >= TEN) {
+            RealTimePage.getIt().getUser().setTokensCount(
+                    RealTimePage.getIt().getUser().getTokensCount() - TEN);
             RealTimePage.getIt().getUser().getCredentials().setAccountType("premium");
         } else {
             putActionOutput(false, node, output);
@@ -273,12 +298,15 @@ class BuyPremiumAccount {
     }
 }
 
-class Purchase {
+final class Purchase {
+    private Purchase() {
+    }
+    /**comanda 'on page' de purchase*/
     static void purchase(final ObjectNode node, final ArrayNode output) {
         if (RealTimePage.getIt().getUser().getCredentials().getAccountType().equals("premium")) {
             if (RealTimePage.getIt().getUser().getNumFreePremiumMovies() != 0) {
-                RealTimePage.getIt().getUser().setNumFreePremiumMovies
-                        (RealTimePage.getIt().getUser().getNumFreePremiumMovies() - 1);
+                RealTimePage.getIt().getUser().setNumFreePremiumMovies(
+                        RealTimePage.getIt().getUser().getNumFreePremiumMovies() - 1);
                 Movie paidMovie = new Movie(RealTimePage.getIt().getMovieList().get(0));
                 RealTimePage.getIt().getUser().getPurchasedMovies().add(paidMovie);
                 putActionOutput(true, node, output);
@@ -290,10 +318,11 @@ class Purchase {
         }
     }
 
+    /** metoda contului standard de a cumpara un film */
     private static void standardWayOfBuyingMovie(final ObjectNode node, final ArrayNode output) {
         if (RealTimePage.getIt().getUser().getTokensCount() > 1) {
-            RealTimePage.getIt().getUser().setTokensCount
-                    (RealTimePage.getIt().getUser().getTokensCount() - 2);
+            RealTimePage.getIt().getUser().setTokensCount(
+                    RealTimePage.getIt().getUser().getTokensCount() - 2);
             Movie paidMovie = new Movie(RealTimePage.getIt().getMovieList().get(0));
             RealTimePage.getIt().getUser().getPurchasedMovies().add(paidMovie);
             putActionOutput(true, node, output);
@@ -303,7 +332,10 @@ class Purchase {
     }
 }
 
-class Watch {
+final class Watch {
+    private Watch() {
+    }
+    /**comanda 'on page' de watch*/
     static void watch(final ObjectNode node, final ArrayNode output) {
         boolean alreadyWatched = false;
         Movie watchedMovie = new Movie(RealTimePage.getIt().getMovieList().get(0));
@@ -321,7 +353,10 @@ class Watch {
     }
 }
 
-class Like {
+final class Like {
+    private Like() {
+    }
+    /**comanda 'on page' de like*/
     static void like(final ObjectNode node, final ArrayNode output) {
         Movie likedMovie = new Movie(RealTimePage.getIt().getMovieList().get(0));
         likedMovie.setNumLikes(likedMovie.getNumLikes() + 1);
@@ -332,6 +367,7 @@ class Like {
         putActionOutput(true, node, output);
     }
 
+    /** updateaza toate listele unui user cu filmul actualizat */
     static void updateAllMovieLists(final Movie actualisedMovie, final User user) {
         int cnt = 0;
         int idx;
@@ -391,13 +427,17 @@ class Like {
     }
 }
 
-class Rate {
+final class Rate {
+    private Rate() {
+    }
+    /**comanda 'on page' de rate*/
     static void rateAMovie(final int rating, final ObjectNode node, final ArrayNode output) {
-        if (rating > 0 && rating < 6) {
+        if (rating > 0 && rating < SIX) {
             Movie ratedMovie = new Movie(RealTimePage.getIt().getMovieList().get(0));
             boolean movieWasRated = false;
             for (int i = 0; i < RealTimePage.getIt().getUser().getRatedMovies().size(); i++) {
-                if (RealTimePage.getIt().getUser().getRatedMovies().get(i).getName().equals(ratedMovie.getName())) {
+                if (RealTimePage.getIt().getUser().getRatedMovies().get(i).getName()
+                        .equals(ratedMovie.getName())) {
                     movieWasRated = true;
                     break;
                 }
@@ -406,7 +446,8 @@ class Rate {
                 ratedMovie.setNumRatings(ratedMovie.getNumRatings() + 1);
                 ratedMovie.setUsersRaters(ratedMovie.getUsersRaters() + 1);
                 ratedMovie.setRatingsSum(ratedMovie.getRatingsSum() + rating);
-                ratedMovie.setRating((double) ratedMovie.getRatingsSum() / ratedMovie.getUsersRaters());
+                ratedMovie.setRating((double) ratedMovie.getRatingsSum()
+                        / ratedMovie.getUsersRaters());
                 RealTimePage.getIt().getMovieList().clear();
                 RealTimePage.getIt().getMovieList().add(ratedMovie);
                 RealTimePage.getIt().getUser().getRatedMovies().add(ratedMovie);
@@ -418,7 +459,8 @@ class Rate {
             } else {
                 ratedMovie.setUsersRaters(ratedMovie.getUsersRaters() + 1);
                 ratedMovie.setRatingsSum(ratedMovie.getRatingsSum() + rating);
-                ratedMovie.setRating((double) ratedMovie.getRatingsSum() / ratedMovie.getUsersRaters());
+                ratedMovie.setRating((double) ratedMovie.getRatingsSum()
+                        / ratedMovie.getUsersRaters());
                 RealTimePage.getIt().getMovieList().clear();
                 RealTimePage.getIt().getMovieList().add(ratedMovie);
                 updateAllMovieLists(ratedMovie,  RealTimePage.getIt().getUser());
@@ -433,12 +475,16 @@ class Rate {
     }
 }
 
-class Subscribe {
+final class Subscribe {
+    private Subscribe() {
+    }
+    /**comanda 'on page' de subscribe*/
     static void subscribe(final String subscribedGenre) {
         User realTimeUser = RealTimePage.getIt().getUser();
         realTimeUser.getSubGenres().add(subscribedGenre);
         for (User databaseUser : AllUsers.getDatabase().getAllUsers()) {
-            if (databaseUser.getCredentials().getName().equals(realTimeUser.getCredentials().getName())) {
+            if (databaseUser.getCredentials().getName().equals(realTimeUser
+                    .getCredentials().getName())) {
                 databaseUser.getSubGenres().add(subscribedGenre);
             }
         }

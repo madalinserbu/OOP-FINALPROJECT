@@ -35,6 +35,7 @@ public final class AllMovies {
         return database;
     }
 
+    /**adauga noul film in toate listele necesare si notifica utilizatorii abonati de acest lcuru*/
     public static void addMovie(final MovieIO addedMovie, final ObjectNode node,
                                 final ArrayNode output) {
         Movie newMovie = new Movie(addedMovie);
@@ -53,7 +54,8 @@ public final class AllMovies {
             for (User databaseUser : AllUsers.getDatabase().getAllUsers()) {
                 for (String genre : databaseUser.getSubGenres()) {
                     if (newMovie.getGenres().contains(genre)) {
-                        if (!newMovie.getCountriesBanned().contains(databaseUser.getCredentials().getCountry())) {
+                        if (!newMovie.getCountriesBanned().contains(databaseUser.getCredentials()
+                                .getCountry())) {
                             databaseUser.getNotifications().add(notify);
                             break;
                         }
@@ -62,12 +64,14 @@ public final class AllMovies {
             }
 
             if (RealTimePage.getIt().getUser() != null) {
-                if (!newMovie.getCountriesBanned().contains(RealTimePage.getIt().getUser().getCredentials().getCountry())) {
+                if (!newMovie.getCountriesBanned().contains(RealTimePage.getIt().getUser()
+                        .getCredentials().getCountry())) {
                     RealTimePage.getIt().getCountryPermittedMovies().add(newMovie);
                 }
                 for (String genre : RealTimePage.getIt().getUser().getSubGenres()) {
                     if (newMovie.getGenres().contains(genre)) {
-                        if (!newMovie.getCountriesBanned().contains(RealTimePage.getIt().getUser().getCredentials().getCountry())) {
+                        if (!newMovie.getCountriesBanned().contains(RealTimePage.getIt().getUser()
+                                .getCredentials().getCountry())) {
                             RealTimePage.getIt().getUser().getNotifications().add(notify);
                             break;
                         }
@@ -77,7 +81,9 @@ public final class AllMovies {
         }
     }
 
-    public static void deleteMovie(String deletedMovie, final ObjectNode node,
+    /**sterge filmul selectat din toate listele unde apare
+     * si notifica utilizatorii abonati de acest lcuru*/
+    public static void deleteMovie(final String deletedMovie, final ObjectNode node,
                                    final ArrayNode output) {
         int control = 0;
         for (int i = 0; i < AllMovies.getDatabase().allMovies.size(); i++) {
@@ -97,14 +103,17 @@ public final class AllMovies {
                         removeMovieByName(databaseUser.getLikedMovies(), deletedMovie);
                         removeMovieByName(databaseUser.getRatedMovies(), deletedMovie);
                         switch (databaseUser.getCredentials().getAccountType()) {
-                            case "premium" -> databaseUser.setNumFreePremiumMovies(databaseUser.getNumFreePremiumMovies() + 1);
-                            case "standard" -> databaseUser.setTokensCount(databaseUser.getTokensCount() + 2);
+                            case "premium" -> databaseUser.setNumFreePremiumMovies(databaseUser
+                                    .getNumFreePremiumMovies() + 1);
+                            case "standard" -> databaseUser.setTokensCount(databaseUser
+                                    .getTokensCount() + 2);
                             default -> System.out.println("unknown acc type");
                         }
                         Notification notify = new Notification(deletedMovie, "DELETE");
                         databaseUser.getNotifications().add(notify);
                     }
-                    if (RealTimePage.getIt().getUser().getCredentials().getName().equals(databaseUser.getCredentials().getName())) {
+                    if (RealTimePage.getIt().getUser().getCredentials().getName().equals(
+                            databaseUser.getCredentials().getName())) {
                         RealTimePage.getIt().setUser(new User(databaseUser));
                     }
                 }
@@ -118,7 +127,9 @@ public final class AllMovies {
         }
     }
 
-    private static void removeMovieByName(ArrayList<Movie> movieCollection, String deletedMovie) {
+    /** sterge un film dintr-o lisa dupa numele acestuia */
+    private static void removeMovieByName(final ArrayList<Movie> movieCollection,
+                                          final String deletedMovie) {
         for (int i = 0; i < movieCollection.size(); i++) {
             if (movieCollection.get(i).getName().equals(deletedMovie)) {
                 movieCollection.remove(i);

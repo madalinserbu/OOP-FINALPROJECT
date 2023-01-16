@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import database.AllUsers;
 import database.Movie;
 import database.User;
-import io.ActionIO;
 
 import java.util.ArrayList;
 
@@ -86,8 +85,9 @@ public final class RealTimePage {
     }
 
     /**executa actiunea de "change page"*/
-    public void changePage(final String type, final String page, final String movieName, final Movie previousMovie,
-                           final ObjectNode node, final ArrayNode output) {
+    public void changePage(final String type, final String page, final String movieName,
+                           final Movie previousMovie, final ObjectNode node,
+                           final ArrayNode output) {
         if (!type.equals("back")) {
             if (RealTimePage.getIt().getUser() != null && (page.equals("movies")
                     || page.equals("see details") || page.equals("upgrades"))) {
@@ -109,11 +109,11 @@ public final class RealTimePage {
                 }
             }
             switch (page) {
-                case "login" -> pageName = "login page";
-                case "register" -> pageName = "register page";
+                case "login" -> setPageName("login page");
+                case "register" -> setPageName("register page");
                 case "movies" -> {
                     movieList = new ArrayList<>(countryPermittedMovies);
-                    pageName = "movies page";
+                    setPageName("movies page");
                     putActionOutput(true, node, output);
                 }
                 case "see details" -> {
@@ -124,16 +124,17 @@ public final class RealTimePage {
                     if (movieNames.contains(movieName)) {
                         movieList.removeIf(movie -> !movie.getName().equals(movieName));
                         movieList = new ArrayList<>(movieList);
-                        pageName = "see details page";
+                        setPageName("see details page");
                         putActionOutput(true, node, output);
                     } else {
                         putActionOutput(false, node, output);
                     }
                 }
-                case "upgrades" -> pageName = "upgrades page";
+                case "upgrades" -> setPageName("upgrades page");
                 case "logout" -> {
                     for (int i = 0; i < AllUsers.getDatabase().getAllUsers().size(); i++) {
-                        if (user.getCredentials().getName().equals(AllUsers.getDatabase().getAllUsers().get(i).getCredentials().getName())) {
+                        if (user.getCredentials().getName().equals(AllUsers.getDatabase()
+                                .getAllUsers().get(i).getCredentials().getName())) {
                             AllUsers.getDatabase().getAllUsers().set(i, new User(user));
                             break;
                         }
@@ -141,7 +142,7 @@ public final class RealTimePage {
                     user = null;
                     movieList.clear();
                     countryPermittedMovies.clear();
-                    pageName = "logout page";
+                    setPageName("logout page");
                     History.getIt().clear();
                 }
                 default -> System.out.println("ERROR simple change page!");
@@ -149,21 +150,21 @@ public final class RealTimePage {
         } else {
             switch (page) {
                 case "homepage" -> {
-                    pageName = "homepage";
+                    setPageName("homepage");
                     movieList.clear();
                 }
                 case "movies page" -> {
                     movieList = new ArrayList<>(countryPermittedMovies);
-                    pageName = "movies page";
+                    setPageName("movies page");
                     putActionOutput(true, node, output);
                 }
                 case "see details page" -> {
                     movieList = new ArrayList<>();
                     movieList.add(previousMovie);
-                    pageName = "see details page";
+                    setPageName("see details page");
                     putActionOutput(true, node, output);
                 }
-                case "upgrades page" -> pageName = "upgrades page";
+                case "upgrades page" -> setPageName("upgrades page");
                 default -> System.out.println("ERROR! back change page");
             }
         }

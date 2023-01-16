@@ -12,18 +12,26 @@ import io.IO;
 import java.io.File;
 import java.io.IOException;
 
-//import static execution.Notification.recommendation;
-import static execution.OnPageActions.*;
+import static execution.Notification.recommendation;
+import static execution.OnPageActions.isOnPageActionPermitted;
+import static execution.OnPageActions.putActionOutput;
+import static execution.OnPageActions.doOnPageAction;
 
-public class Main {
+public final class Main {
+    private Main() {
+    }
     /**main*/
     public static void main(final String[] args) throws IOException {
         ObjectMapper objMap = new ObjectMapper();
         IO input = objMap.readValue(new File(args[0]), IO.class);
+        //se citeste input-ul
 
         AllUsers.getDatabase(input);
         AllMovies.getDatabase(input);
+        // se contruiesc database-urile
+
         ArrayNode output = objMap.createArrayNode();
+        // se parcurg actiunile
         for (int i = 0; i < input.actions().size(); i++) {
             ObjectNode node = objMap.createObjectNode();
             ActionIO action = input.actions().get(i);
@@ -50,11 +58,14 @@ public class Main {
                 History.back(node, output);
             }
         }
+        // in functie de tip se executa actiunile
 
-        if (RealTimePage.getIt().getUser() != null &&
-            RealTimePage.getIt().getUser().getCredentials().getAccountType().equals("premium")) {
-            //recommendation(output);
+        if (RealTimePage.getIt().getUser() != null
+                && RealTimePage.getIt().getUser().getCredentials()
+                .getAccountType().equals("premium")) {
+            recommendation(output);
         }
+        // se ofera recomandarea daca este cazul
 
         RealTimePage.getIt().setUser(null);
         RealTimePage.getIt().getMovieList().clear();
@@ -63,18 +74,10 @@ public class Main {
         History.getIt().clear();
         AllUsers.freeDatabase();
         AllMovies.freeDatabase();
+        // se goleste tot pentru urmatorul test
 
         ObjectWriter objWrt = objMap.writerWithDefaultPrettyPrinter();
         objWrt.writeValue(new File(args[1]), output);
-
-        char[] inPath = args[0].toCharArray();
-        String outPath;
-        if (inPath[inPath.length - 6] == '0') {
-            outPath = "checker\\resources\\out\\" + args[1] + "10.json";
-        } else {
-            outPath = "checker\\resources\\out\\" + args[1]
-                    + inPath[inPath.length - 6] + ".json";
-        }
-        objWrt.writeValue(new File(outPath), output);
+        //se afiseaza output-ul
     }
 }

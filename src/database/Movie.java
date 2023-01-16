@@ -3,8 +3,6 @@ package database;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.MovieIO;
 
-import java.util.ArrayList;
-
 public final class Movie extends MovieIO {
     private int numLikes;
     private double rating;
@@ -73,7 +71,7 @@ public final class Movie extends MovieIO {
         return usersRaters;
     }
 
-    public void setUsersRaters(int usersRaters) {
+    public void setUsersRaters(final int usersRaters) {
         this.usersRaters = usersRaters;
     }
 }
